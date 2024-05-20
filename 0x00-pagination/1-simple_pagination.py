@@ -9,7 +9,7 @@ from typing import List, Tuple
 
 def index_range(page: int, page_size: int) -> Tuple[int, int]:
     """
-    Calculate the start and end indexes for the given page and page size.
+    Calculate the start and end indexes.
 
     :param page: The current page number (1-indexed)
     :param page_size: The number of items per page
@@ -45,12 +45,13 @@ class Server:
 
         :param page: The current page number (1-indexed)
         :param page_size: The number of items per page
-        :return: A list of lists, where each list represents a row in the dataset
+        :return: A list of lists,
+                where each list represents a row in the dataset
         """
         assert isinstance(
-            page, int) and page > 0, "page must be a positive integer"
+            page, int) and page > 0, "Must be positive integer"
         assert isinstance(
-            page_size, int) and page_size > 0, "page_size must be a positive integer"
+            page_size, int) and page_size > 0, "Must be positive integer"
 
         start_index, end_index = index_range(page, page_size)
         dataset = self.dataset()
