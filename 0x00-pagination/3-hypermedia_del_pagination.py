@@ -8,19 +8,6 @@ import math
 from typing import List, Dict, Any
 
 
-def index_range(page: int, page_size: int) -> Tuple[int, int]:
-    """
-    Calculate the start and end indexes for the given page and page size.
-
-    :param page: The current page number (1-indexed)
-    :param page_size: The number of items per page
-    :return: A tuple containing the start index and end index
-    """
-    start_index = (page - 1) * page_size
-    end_index = page * page_size
-    return start_index, end_index
-
-
 class Server:
     """Server class to paginate a database of popular baby names.
     """
@@ -51,34 +38,30 @@ class Server:
             }
         return self.__indexed_dataset
 
-    def get_hyper_index(self, index: int = None, page_size: int = 10) -> Dict[str, Any]:
+    def get_hyper_index(self, index: int = None, page_size: int = 10) -> Dict:
         """
-        Return a dictionary with pagination data ensuring resilience to deletions.
+        Get hypermedia pagination details with a deletion-resilient mechanism.
 
-        :param index: The current start index of the return page
-        :param page_size: The number of items per page
-        :return: A dictionary containing pagination details
+        :param index: The current start index of the return page.
+        :param page_size: The number of items per page.
+        :return: A dictionary containing pagination details.
         """
-        indexed_data = self.indexed_dataset()
-        assert isinstance(index, int) and 0 <= index < len(
-            indexed_data), "index must be in a valid range"
+        indexed_dataset = self.indexed_dataset()
+        assert index is not None and 0 <= index < len(indexed_dataset)
 
         data = []
         current_index = index
-        count = 0
-
-        while count < page_size and current_index < len(indexed_data):
-            if current_index in indexed_data:
-                data.append(indexed_data[current_index])
-                count += 1
+        while len(data) < page_size and current_index < len(indexed_dataset):
+            if current_index in indexed_dataset:
+                data.append(indexed_dataset[current_index])
             current_index += 1
 
         next_index = current_index if current_index < len(
-            indexed_data) else None
+            indexed_dataset) else None
 
         return {
             'index': index,
-            'data': data,
+            'next_index': next_index,
             'page_size': len(data),
-            'next_index': next_index
+            'data': data,
         }
